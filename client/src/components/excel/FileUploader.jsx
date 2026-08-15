@@ -1,4 +1,4 @@
-import { UploadCloud } from "lucide-react";
+import { UploadCloud, FileSpreadsheet } from "lucide-react";
 
 function FileUploader({
   file,
@@ -7,21 +7,31 @@ function FileUploader({
   loading,
 }) {
   return (
-    <div className="border-2 border-dashed border-blue-400 rounded-2xl p-16 bg-white text-center shadow-md">
+    <div className="rounded-xl border border-dashed border-violet-500/30 bg-[#111113] px-5 py-8 text-center transition-all duration-300 hover:border-violet-500/50 hover:bg-violet-500/[0.02] md:px-8 md:py-10">
 
-      <UploadCloud
-        size={70}
-        className="mx-auto text-blue-500"
-      />
+      {/* Upload Icon */}
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-violet-500/20 bg-violet-500/10 text-violet-400">
+        <UploadCloud
+          size={28}
+          strokeWidth={1.7}
+        />
+      </div>
 
-      <h2 className="text-2xl font-semibold mt-6">
-        Drag & Drop Excel File
+      {/* Heading */}
+      <h2 className="mt-5 text-lg font-semibold tracking-tight text-zinc-100 md:text-xl">
+        Upload your Excel file
       </h2>
 
-      <p className="text-gray-500 mt-3">
-        or click below to browse
+      {/* Description */}
+      <p className="mx-auto mt-2 max-w-md text-xs leading-5 text-zinc-500 md:text-sm">
+        Drag and drop your spreadsheet here, or choose a file from your device.
       </p>
 
+      <p className="mt-1 text-[11px] text-zinc-600">
+        Supported formats: .xlsx, .xls, .csv
+      </p>
+
+      {/* Hidden Input */}
       <input
         type="file"
         accept=".xlsx,.xls,.csv"
@@ -30,62 +40,79 @@ function FileUploader({
         onChange={handleFileChange}
       />
 
-      <label
-        htmlFor="excelFile"
-        className="inline-block mt-6 bg-blue-600 text-white px-6 py-3 rounded-xl cursor-pointer hover:bg-blue-700 transition"
-      >
-        Choose File
-      </label>
+      {/* Buttons */}
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
 
+        {/* Choose File */}
+        <label
+          htmlFor="excelFile"
+          className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-violet-500/30 bg-violet-500/10 px-4 py-2.5 text-sm font-medium text-violet-300 transition-all duration-200 hover:border-violet-500/50 hover:bg-violet-500/20"
+        >
+          <FileSpreadsheet size={17} />
+          Choose File
+        </label>
+
+        {/* Upload */}
+        <button
+          onClick={handleUpload}
+          disabled={loading}
+          className={`inline-flex min-w-[120px] items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-white transition-all duration-200 ${
+            loading
+              ? "cursor-not-allowed bg-zinc-700 text-zinc-400"
+              : "bg-violet-600 hover:bg-violet-500 hover:shadow-lg hover:shadow-violet-900/20"
+          }`}
+        >
+          {loading ? (
+            <>
+              <svg
+                className="h-4 w-4 animate-spin"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                />
+              </svg>
+
+              Uploading...
+            </>
+          ) : (
+            "Upload File"
+          )}
+        </button>
+
+      </div>
+
+      {/* Selected File */}
       {file && (
-        <p className="mt-5 text-lg font-medium">
-          Selected File:
-          <span className="text-blue-600 font-semibold">
-            {" "}
-            {file.name}
-          </span>
-        </p>
+        <div className="mx-auto mt-5 flex max-w-md items-center justify-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/70 px-4 py-2.5">
+
+          <FileSpreadsheet
+            size={16}
+            className="shrink-0 text-violet-400"
+          />
+
+          <p className="truncate text-xs text-zinc-400">
+            Selected:
+            <span className="ml-1 font-medium text-zinc-200">
+              {file.name}
+            </span>
+          </p>
+
+        </div>
       )}
-
-      <button
-        onClick={handleUpload}
-        disabled={loading}
-        className={`mt-6 ml-4 px-6 py-3 rounded-xl text-white font-semibold transition duration-300 ${
-          loading
-            ? "bg-gray-400 cursor-not-allowed"
-            : "bg-green-600 hover:bg-green-700"
-        }`}
-      >
-        {loading ? (
-          <div className="flex items-center gap-2 justify-center">
-            <svg
-              className="animate-spin h-5 w-5 text-white"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-              ></path>
-            </svg>
-
-            Uploading...
-          </div>
-        ) : (
-          "Upload File"
-        )}
-      </button>
 
     </div>
   );

@@ -7,6 +7,7 @@ import {
   Settings,
   LogOut,
   X,
+  FileSpreadsheet,
 } from "lucide-react";
 
 import { NavLink, useNavigate } from "react-router-dom";
@@ -20,146 +21,247 @@ function Sidebar({ open, setOpen }) {
   };
 
   const menu =
-    "flex items-center gap-3 p-3 rounded-xl transition-all duration-300";
+    "group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-300";
 
   return (
     <>
       {/* Mobile Overlay */}
       {open && (
         <div
-          className="fixed inset-0 bg-black/40 z-30 lg:hidden"
+          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm lg:hidden"
           onClick={() => setOpen(false)}
         />
       )}
 
+      {/* Sidebar */}
       <aside
-        className={`fixed lg:static z-40 h-screen w-72 bg-slate-900 text-white flex flex-col transform transition-transform duration-300
+        className={`fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r border-zinc-800 bg-[#101011] text-white shadow-2xl shadow-black/30 transition-transform duration-300
         ${open ? "translate-x-0" : "-translate-x-full"}
-        lg:translate-x-0`}
+        lg:static lg:translate-x-0`}
       >
         {/* Logo */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-700">
+        <div className="flex items-center justify-between border-b border-zinc-800 px-5 py-5">
 
-          <div>
-            <h1 className="text-2xl font-bold text-blue-400">
-              Excel Analytics
-            </h1>
+          <div className="flex items-center gap-3">
 
-            <p className="text-xs text-gray-400">
-              Dashboard
-            </p>
+            {/* Logo Icon */}
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-600/10 text-red-500">
+              <FileSpreadsheet size={21} strokeWidth={1.8} />
+            </div>
+
+            {/* Logo Text */}
+            <div>
+              <h1 className="text-base font-semibold tracking-tight text-white">
+                Excel <span className="text-red-500">Analytics</span>
+              </h1>
+
+              <p className="mt-0.5 text-[11px] text-zinc-500">
+                Data Dashboard
+              </p>
+            </div>
+
           </div>
 
+          {/* Mobile Close */}
           <button
-            className="lg:hidden"
+            className="rounded-lg p-2 text-zinc-500 transition-colors duration-200 hover:bg-zinc-800 hover:text-white lg:hidden"
             onClick={() => setOpen(false)}
           >
-            <X />
+            <X size={19} />
           </button>
 
         </div>
 
-        {/* Menu */}
-        <nav className="flex-1 p-5 space-y-2">
+        {/* Navigation */}
+        <nav className="flex-1 space-y-1.5 overflow-y-auto px-3 py-5">
 
+          {/* Dashboard */}
           <NavLink
             to="/dashboard"
             className={({ isActive }) =>
               `${menu} ${
                 isActive
-                  ? "bg-blue-600"
-                  : "hover:bg-slate-800"
+                  ? "border border-red-900/40 bg-red-950/50 text-red-400 shadow-sm shadow-red-950/20"
+                  : "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-200"
               }`
             }
           >
-            <LayoutDashboard size={20} />
-            Dashboard
+            {({ isActive }) => (
+              <>
+                <LayoutDashboard
+                  size={19}
+                  strokeWidth={isActive ? 2 : 1.7}
+                  className={
+                    isActive
+                      ? "text-red-400"
+                      : "text-zinc-500 transition-colors group-hover:text-zinc-300"
+                  }
+                />
+
+                <span>Dashboard</span>
+              </>
+            )}
           </NavLink>
 
+          {/* Upload */}
           <NavLink
             to="/upload"
             className={({ isActive }) =>
               `${menu} ${
                 isActive
-                  ? "bg-blue-600"
-                  : "hover:bg-slate-800"
+                  ? "border border-red-900/40 bg-red-950/50 text-red-400 shadow-sm shadow-red-950/20"
+                  : "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-200"
               }`
             }
           >
-            <Upload size={20} />
-            Upload
+            {({ isActive }) => (
+              <>
+                <Upload
+                  size={19}
+                  strokeWidth={isActive ? 2 : 1.7}
+                  className={
+                    isActive
+                      ? "text-red-400"
+                      : "text-zinc-500 transition-colors group-hover:text-zinc-300"
+                  }
+                />
+
+                <span>Upload</span>
+              </>
+            )}
           </NavLink>
 
+          {/* Analytics */}
           <NavLink
             to="/analytics"
             className={({ isActive }) =>
               `${menu} ${
                 isActive
-                  ? "bg-blue-600"
-                  : "hover:bg-slate-800"
+                  ? "border border-red-900/40 bg-red-950/50 text-red-400 shadow-sm shadow-red-950/20"
+                  : "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-200"
               }`
             }
           >
-            <BarChart3 size={20} />
-            Analytics
+            {({ isActive }) => (
+              <>
+                <BarChart3
+                  size={19}
+                  strokeWidth={isActive ? 2 : 1.7}
+                  className={
+                    isActive
+                      ? "text-red-400"
+                      : "text-zinc-500 transition-colors group-hover:text-zinc-300"
+                  }
+                />
+
+                <span>Analytics</span>
+              </>
+            )}
           </NavLink>
 
+          {/* History */}
           <NavLink
             to="/history"
             className={({ isActive }) =>
               `${menu} ${
                 isActive
-                  ? "bg-blue-600"
-                  : "hover:bg-slate-800"
+                  ? "border border-red-900/40 bg-red-950/50 text-red-400 shadow-sm shadow-red-950/20"
+                  : "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-200"
               }`
             }
           >
-            <History size={20} />
-            History
+            {({ isActive }) => (
+              <>
+                <History
+                  size={19}
+                  strokeWidth={isActive ? 2 : 1.7}
+                  className={
+                    isActive
+                      ? "text-red-400"
+                      : "text-zinc-500 transition-colors group-hover:text-zinc-300"
+                  }
+                />
+
+                <span>History</span>
+              </>
+            )}
           </NavLink>
 
+          {/* Profile */}
           <NavLink
             to="/profile"
             className={({ isActive }) =>
               `${menu} ${
                 isActive
-                  ? "bg-blue-600"
-                  : "hover:bg-slate-800"
+                  ? "border border-red-900/40 bg-red-950/50 text-red-400 shadow-sm shadow-red-950/20"
+                  : "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-200"
               }`
             }
           >
-            <User size={20} />
-            Profile
+            {({ isActive }) => (
+              <>
+                <User
+                  size={19}
+                  strokeWidth={isActive ? 2 : 1.7}
+                  className={
+                    isActive
+                      ? "text-red-400"
+                      : "text-zinc-500 transition-colors group-hover:text-zinc-300"
+                  }
+                />
+
+                <span>Profile</span>
+              </>
+            )}
           </NavLink>
 
+          {/* Settings */}
           <NavLink
             to="/settings"
             className={({ isActive }) =>
               `${menu} ${
                 isActive
-                  ? "bg-blue-600"
-                  : "hover:bg-slate-800"
+                  ? "border border-red-900/40 bg-red-950/50 text-red-400 shadow-sm shadow-red-950/20"
+                  : "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-200"
               }`
             }
           >
-            <Settings size={20} />
-            Settings
+            {({ isActive }) => (
+              <>
+                <Settings
+                  size={19}
+                  strokeWidth={isActive ? 2 : 1.7}
+                  className={
+                    isActive
+                      ? "text-red-400"
+                      : "text-zinc-500 transition-colors group-hover:text-zinc-300"
+                  }
+                />
+
+                <span>Settings</span>
+              </>
+            )}
           </NavLink>
 
         </nav>
 
-        <div className="p-5 border-t border-slate-700">
+        {/* Logout */}
+        <div className="border-t border-zinc-800 p-3">
 
           <button
-  onClick={handleLogout}
-  className="w-full flex items-center gap-3 p-3 rounded-xl text-gray-300 hover:bg-slate-800 hover:text-red-400 transition-all duration-300"
->
-  <LogOut size={20} className="text-red-400" />
-  Logout
-</button>
+            onClick={handleLogout}
+            className="group flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-zinc-500 transition-all duration-300 hover:bg-red-950/30 hover:text-red-400"
+          >
+            <LogOut
+              size={19}
+              strokeWidth={1.8}
+              className="text-zinc-500 transition-colors duration-300 group-hover:text-red-400"
+            />
+
+            <span>Logout</span>
+          </button>
 
         </div>
-
       </aside>
     </>
   );

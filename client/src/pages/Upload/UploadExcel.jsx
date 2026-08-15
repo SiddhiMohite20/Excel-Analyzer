@@ -61,12 +61,11 @@ function UploadExcel() {
 
       // Scroll to table
       window.scrollTo({
-        top: 550,
+        top: 500,
         behavior: "smooth",
       });
-
     } catch (error) {
-      console.error(error);
+      console.error("Upload error:", error);
       toast.error("Upload failed!");
     } finally {
       setLoading(false);
@@ -129,49 +128,91 @@ function UploadExcel() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-6xl mx-auto">
+      <div className="mx-auto w-full max-w-7xl space-y-6">
 
-        <h1 className="text-3xl font-bold mb-8">
-          Upload Excel File
-        </h1>
+        {/* Page Header */}
+        <div className="flex flex-col gap-2">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-400">
+            Data Management
+          </p>
 
-        <FileUploader
-          file={file}
-          handleFileChange={handleFileChange}
-          handleUpload={handleUpload}
-          loading={loading}
-        />
+          <h1 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">
+            Upload Excel File
+          </h1>
 
+          <p className="max-w-2xl text-sm text-zinc-500">
+            Upload your spreadsheet to search, analyze, visualize,
+            and export your data.
+          </p>
+        </div>
+
+        {/* Upload Section */}
+        <section className="rounded-2xl border border-zinc-800 bg-[#151518] p-4 shadow-lg shadow-black/10 md:p-5">
+          <FileUploader
+            file={file}
+            handleFileChange={handleFileChange}
+            handleUpload={handleUpload}
+            loading={loading}
+          />
+        </section>
+
+        {/* Data Section */}
         {excelData.length > 0 && (
-          <>
-            <SearchBar
-              search={search}
-              setSearch={(value) => {
-                setSearch(value);
-                setCurrentPage(1);
-              }}
-            />
+          <div className="space-y-5">
 
-            <ExportButtons
-              data={filteredData}
-            />
+            {/* Search + Export */}
+            <section className="rounded-2xl border border-zinc-800 bg-[#151518] p-4 md:p-5">
 
-            <ExcelTable
-              filteredData={currentRows}
-              handleSort={handleSort}
-            />
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              setCurrentPage={setCurrentPage}
-            />
+                <div className="w-full lg:max-w-xl">
+                  <SearchBar
+                    search={search}
+                    setSearch={(value) => {
+                      setSearch(value);
+                      setCurrentPage(1);
+                    }}
+                  />
+                </div>
 
-            <DynamicChart />
-            
+                <div className="shrink-0">
+                  <ExportButtons data={filteredData} />
+                </div>
 
-<ColumnAnalytics />
-          </>
+              </div>
+            </section>
+
+            {/* Excel Table */}
+            <section className="overflow-hidden rounded-2xl border border-zinc-800 bg-[#151518] shadow-lg shadow-black/10">
+              <ExcelTable
+                filteredData={currentRows}
+                handleSort={handleSort}
+              />
+            </section>
+
+            {/* Pagination */}
+            <div className="flex justify-center">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                setCurrentPage={setCurrentPage}
+              />
+            </div>
+
+            {/* Analytics */}
+            <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+
+              <section className="rounded-2xl border border-zinc-800 bg-[#151518] p-5 shadow-lg shadow-black/10">
+                <ColumnAnalytics />
+              </section>
+
+              <section className="rounded-2xl border border-zinc-800 bg-[#151518] p-5 shadow-lg shadow-black/10">
+                <DynamicChart />
+              </section>
+
+            </div>
+
+          </div>
         )}
 
       </div>

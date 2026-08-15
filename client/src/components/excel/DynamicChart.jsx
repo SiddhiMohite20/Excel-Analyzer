@@ -1,4 +1,6 @@
-import { useContext, useState } from "react";
+import { useContext, useMemo, useState } from "react";
+import { BarChart3 } from "lucide-react";
+
 import { ExcelContext } from "../../context/ExcelContext";
 
 import {
@@ -19,196 +21,343 @@ import {
 function DynamicChart() {
   const { excelData } = useContext(ExcelContext);
 
+  const columns =
+    excelData.length > 0
+      ? Object.keys(excelData[0])
+      : [];
+
+  const numericColumns =
+    excelData.length > 0
+      ? columns.filter((column) =>
+          excelData.some(
+            (row) =>
+              row[column] !== "" &&
+              row[column] !== null &&
+              !isNaN(Number(row[column]))
+          )
+        )
+      : [];
+
+  const defaultXAxis =
+    columns.find(
+      (column) => !numericColumns.includes(column)
+    ) ||
+    columns[0] ||
+    "";
+
+  const defaultYAxis =
+    numericColumns[0] ||
+    columns[1] ||
+    columns[0] ||
+    "";
+
+  const [xAxis, setXAxis] = useState("");
+  const [yAxis, setYAxis] = useState("");
+  const [chartType, setChartType] = useState("bar");
+
+  const activeXAxis = xAxis || defaultXAxis;
+  const activeYAxis = yAxis || defaultYAxis;
+
+  const chartData = useMemo(() => {
+    if (
+      !excelData.length ||
+      !activeXAxis ||
+      !activeYAxis
+    ) {
+      return [];
+    }
+
+    const groupedData = {};
+
+    excelData.forEach((row) => {
+      const key =
+        row[activeXAxis]?.toString() || "Unknown";
+
+      const value = isNaN(Number(row[activeYAxis]))
+        ? 0
+        : Number(row[activeYAxis]);
+
+      if (!groupedData[key]) {
+        groupedData[key] = 0;
+      }
+
+      groupedData[key] += value;
+    });
+
+    return Object.entries(groupedData)
+      .slice(0, 15)
+      .map(([key, value]) => ({
+        category: key,
+        value,
+      }));
+  }, [
+    excelData,
+    activeXAxis,
+    activeYAxis,
+  ]);
+
+  const COLORS = [
+    "#8b5cf6",
+    "#6366f1",
+    "#a855f7",
+    "#7c3aed",
+    "#c084fc",
+    "#818cf8",
+  ];
+
   if (excelData.length === 0) {
     return null;
   }
 
-  const columns = Object.keys(excelData[0]);
-
-  const [xAxis, setXAxis] = useState(columns[0]);
-  const [yAxis, setYAxis] = useState(columns[1]);
-  const [chartType, setChartType] = useState("bar");
-
- const groupedData = {};
-
-excelData.forEach((row) => {
-  const key = row[xAxis];
-
-  const value = isNaN(Number(row[yAxis]))
-    ? 1
-    : Number(row[yAxis]);
-
-  if (!groupedData[key]) {
-    groupedData[key] = 0;
-  }
-
-  groupedData[key] += value;
-});
-
-const chartData = Object.keys(groupedData).map((key) => ({
-  [xAxis]: key,
-  [yAxis]: groupedData[key],
-}));
-
-  const COLORS = [
-  "#2563eb",
-  "#16a34a",
-  "#dc2626",
-  "#f59e0b",
-  "#9333ea",
-  "#0891b2",
-];
-
   return (
-    <div className="bg-white mt-10 rounded-xl shadow-md p-6">
+    <section className="rounded-2xl border border-zinc-800 bg-[#151518] p-5 shadow-lg shadow-black/10">
 
-      <h2 className="text-2xl font-bold mb-6">
-        Dynamic Chart
-      </h2>
-
-      <div className="flex gap-5 mb-8">
+      {/* Header */}
+      <div className="mb-5 flex items-center gap-3">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-violet-500/20 bg-violet-500/10 text-violet-400">
+          <BarChart3 size={18} />
+        </div>
 
         <div>
-          <label className="block mb-2 font-semibold">
+          <h2 className="text-base font-semibold text-white">
+            Dynamic Chart
+          </h2>
+
+          <p className="mt-1 text-xs text-zinc-500">
+            Visualize your spreadsheet data.
+          </p>
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+
+        <div>
+          <label className="mb-2 block text-xs font-medium text-zinc-500">
             X Axis
           </label>
 
           <select
-            value={xAxis}
-            onChange={(e) => setXAxis(e.target.value)}
-            className="border rounded-lg p-2"
+            value={activeXAxis}
+            onChange={(e) =>
+              setXAxis(e.target.value)
+            }
+            className="h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 px-3 text-sm text-zinc-300 outline-none focus:border-violet-500/50"
           >
-            {columns.map((col) => (
-              <option key={col}>{col}</option>
+            {columns.map((column) => (
+              <option
+                key={column}
+                value={column}
+                className="bg-zinc-900"
+              >
+                {column}
+              </option>
             ))}
           </select>
         </div>
 
         <div>
-          <label className="block mb-2 font-semibold">
+          <label className="mb-2 block text-xs font-medium text-zinc-500">
             Y Axis
           </label>
 
           <select
-            value={yAxis}
-            onChange={(e) => setYAxis(e.target.value)}
-            className="border rounded-lg p-2"
+            value={activeYAxis}
+            onChange={(e) =>
+              setYAxis(e.target.value)
+            }
+            className="h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/80 px-3 text-sm text-zinc-300 outline-none focus:border-violet-500/50"
           >
-            {columns.map((col) => (
-              <option key={col}>{col}</option>
+            {numericColumns.map((column) => (
+              <option
+                key={column}
+                value={column}
+                className="bg-zinc-900"
+              >
+                {column}
+              </option>
             ))}
           </select>
         </div>
 
       </div>
 
-      <div className="flex gap-4 mb-8">
+      {/* Chart Type */}
+      <div className="mt-4 flex flex-wrap gap-2">
 
-  <button
-    onClick={() => setChartType("bar")}
-    className={`px-5 py-2 rounded-lg ${
-      chartType === "bar"
-        ? "bg-blue-600 text-white"
-        : "bg-gray-200"
-    }`}
-  >
-    📊 Bar
-  </button>
+        <button
+          onClick={() => setChartType("bar")}
+          className={`rounded-lg px-3.5 py-2 text-xs font-medium transition-all duration-200 ${
+            chartType === "bar"
+              ? "bg-violet-600 text-white shadow-lg shadow-violet-950/20"
+              : "border border-zinc-800 bg-zinc-900 text-zinc-500 hover:text-zinc-300"
+          }`}
+        >
+          Bar
+        </button>
 
-  <button
-    onClick={() => setChartType("pie")}
-    className={`px-5 py-2 rounded-lg ${
-      chartType === "pie"
-        ? "bg-green-600 text-white"
-        : "bg-gray-200"
-    }`}
-  >
-    🥧 Pie
-  </button>
+        <button
+          onClick={() => setChartType("pie")}
+          className={`rounded-lg px-3.5 py-2 text-xs font-medium transition-all duration-200 ${
+            chartType === "pie"
+              ? "bg-violet-600 text-white shadow-lg shadow-violet-950/20"
+              : "border border-zinc-800 bg-zinc-900 text-zinc-500 hover:text-zinc-300"
+          }`}
+        >
+          Pie
+        </button>
 
-  <button
-    onClick={() => setChartType("line")}
-    className={`px-5 py-2 rounded-lg ${
-      chartType === "line"
-        ? "bg-purple-600 text-white"
-        : "bg-gray-200"
-    }`}
-  >
-    📈 Line
-  </button>
+        <button
+          onClick={() => setChartType("line")}
+          className={`rounded-lg px-3.5 py-2 text-xs font-medium transition-all duration-200 ${
+            chartType === "line"
+              ? "bg-violet-600 text-white shadow-lg shadow-violet-950/20"
+              : "border border-zinc-800 bg-zinc-900 text-zinc-500 hover:text-zinc-300"
+          }`}
+        >
+          Line
+        </button>
 
-</div>
+      </div>
 
-      <ResponsiveContainer width="100%" height={400}>
+      {/* Chart */}
+      <div className="mt-65h-[260px] w-full">
 
-  {chartType === "bar" && (
+        {chartData.length === 0 ? (
+          <div className="flex h-full items-center justify-center text-sm text-zinc-600">
+            Select a valid X and Y axis.
+          </div>
+        ) : (
+          <ResponsiveContainer
+            width="100%"
+            height="100%"
+          >
+            {chartType === "bar" && (
+              <BarChart data={chartData}>
+                <CartesianGrid
+                  stroke="#27272a"
+                  strokeDasharray="3 3"
+                />
 
-    <BarChart data={chartData}>
+                <XAxis
+                  dataKey="category"
+                  tick={{
+                    fill: "#71717a",
+                    fontSize: 11,
+                  }}
+                />
 
-      <CartesianGrid strokeDasharray="3 3" />
+                <YAxis
+                  tick={{
+                    fill: "#71717a",
+                    fontSize: 11,
+                  }}
+                />
 
-      <XAxis dataKey={xAxis} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#18181b",
+                    border: "1px solid #3f3f46",
+                    borderRadius: "10px",
+                    color: "#fff",
+                  }}
+                />
 
-      <YAxis />
+                <Bar
+                  dataKey="value"
+                  fill="#8b5cf6"
+                  radius={[6, 6, 0, 0]}
+                />
+              </BarChart>
+            )}
 
-      <Tooltip />
+            {chartType === "pie" && (
+              <PieChart>
 
-      <Bar
-        dataKey={yAxis}
-        fill="#2563eb"
-      />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#18181b",
+                    border: "1px solid #3f3f46",
+                    borderRadius: "10px",
+                    color: "#fff",
+                  }}
+                />
 
-    </BarChart>
+                <Pie
+                  data={chartData}
+                  dataKey="value"
+                  nameKey="category"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={120}
+                >
+                  {chartData.map(
+                    (entry, index) => (
+                      <Cell
+                        key={index}
+                        fill={
+                          COLORS[
+                            index % COLORS.length
+                          ]
+                        }
+                      />
+                    )
+                  )}
+                </Pie>
 
-  )}
+              </PieChart>
+            )}
 
-  {chartType === "pie" && (
+            {chartType === "line" && (
+              <LineChart data={chartData}>
+                <CartesianGrid
+                  stroke="#27272a"
+                  strokeDasharray="3 3"
+                />
 
-    <PieChart>
+                <XAxis
+                  dataKey="category"
+                  tick={{
+                    fill: "#71717a",
+                    fontSize: 11,
+                  }}
+                />
 
-      <Tooltip />
-<Pie
-  data={chartData}
-  dataKey={yAxis}
-  nameKey={xAxis}
-  outerRadius={170}
->
-        {chartData.map((entry, index) => (
-          <Cell
-            key={index}
-            fill={COLORS[index % COLORS.length]}
-          />
-        ))}
-      </Pie>
+                <YAxis
+                  tick={{
+                    fill: "#71717a",
+                    fontSize: 11,
+                  }}
+                />
 
-    </PieChart>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#18181b",
+                    border: "1px solid #3f3f46",
+                    borderRadius: "10px",
+                    color: "#fff",
+                  }}
+                />
 
-  )}
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#8b5cf6"
+                  strokeWidth={2.5}
+                  dot={{
+                    r: 3,
+                    fill: "#8b5cf6",
+                  }}
+                />
+              </LineChart>
+            )}
 
-  {chartType === "line" && (
+          </ResponsiveContainer>
+        )}
 
-    <LineChart data={chartData}>
+      </div>
 
-      <CartesianGrid strokeDasharray="3 3" />
-
-      <XAxis dataKey={xAxis} />
-
-      <YAxis />
-
-      <Tooltip />
-
-      <Line
-        type="monotone"
-        dataKey={yAxis}
-        stroke="#16a34a"
-      />
-
-    </LineChart>
-
-  )}
-
-</ResponsiveContainer>
-    </div>
+    </section>
   );
 }
 

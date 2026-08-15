@@ -2,23 +2,23 @@ function DashboardCard({
   title,
   value,
   icon,
-  color = "bg-blue-600",
+  color = "bg-red-500/10 text-red-400",
 }) {
   return (
-    <div className="bg-white rounded-3xl shadow-md border border-gray-100 p-6 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+    <div className="group rounded-2xl border border-zinc-800 bg-[#151518] p-5 shadow-lg shadow-black/10 transition-all duration-300 hover:-translate-y-1 hover:border-red-900/50 hover:shadow-xl hover:shadow-red-950/10">
 
-      <div className="flex justify-between items-start">
+      <div className="flex items-start justify-between gap-4">
 
-        <div>
-          <p className="text-gray-500 text-sm font-medium">
+        <div className="min-w-0">
+          <p className="text-xs font-medium text-zinc-500">
             {title}
           </p>
 
           <h2
-            className={`mt-4 font-bold text-slate-800 ${
+            className={`mt-3 font-semibold tracking-tight text-white ${
               title === "Last Upload"
-                ? "text-lg truncate max-w-[180px]"
-                : "text-4xl"
+                ? "max-w-[180px] truncate text-lg"
+                : "text-3xl"
             }`}
             title={value}
           >
@@ -27,11 +27,17 @@ function DashboardCard({
         </div>
 
         <div
-          className={`${color} w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg`}
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/5 ${color} transition-all duration-300 group-hover:scale-105`}
         >
           {icon}
         </div>
 
+      </div>
+
+      <div className="mt-5 border-t border-zinc-800 pt-3">
+        <p className="text-[11px] text-zinc-600">
+          Updated from your analytics
+        </p>
       </div>
 
     </div>
